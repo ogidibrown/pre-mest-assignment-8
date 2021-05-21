@@ -1,46 +1,57 @@
 const express = require('express');
-const users = require('./users');
-
 
 const router = express.Router();
-const usermodel = require ('./usermodel')
+
+const usermodel = require('./usermodel');
+
+const{ genPassword, validPassword} = require('./brown/password');
 
 
+router.post("/login", async (request, response)=>{
+    const {email, password} = request.body;
 
-router.get('/', function(request, response){
-    response.status(200).send("hello home")
-})
+    let responseData = await usermodel.findOne({email});
 
+const isValid = validPassword(password, responseData.salt, responseData.hash)
 
-router.post("/login", function(request,response){
-    const { username, password } = request.body
     
-    let user = users.filter(arrayelement => arrayelement.username === username)
-    
-    if(user.length == 1){
+    if (isValid) {
         
-        if(user[0].password === password){
-            response.send({message:"Login successful"})
-        }
-        response.send({message:"user or password is wrong"})
-    } else {
-        response.send({message:"User does not exit"})
-    }
-})
+            response.status(200).send({success:true, message:"successful"})
+        }else{
+            response.status(400).send({failure:true, message:"Wrong Username or password"})
+            }
 
-router.post('/signup', function(request,response){
-    var newUser = { 
-        name:request.body.name,
-        password:request.body.password,
-        email:request.body.email,
-        number: request.body.number
-    }
+  
 
-    users.push({newUser})
-    console.log(users)
-    response.status(200).send({message:"successful", data:newUser});
+
 })
 
 
+
+
+
+
+
+
+router.post("/signup", async (request, response)=>{
+    const {email, password} = request.body
+
+const saltHash = genPassword(password)
+const salt = saltHash.salt
+const hash = saltHash.hash
+    
+
+ try{
+    let newuser = new usermodel({email, salt, hash})
+    let responseData= await newuser.save()
+    response.send({message:"you have successfully signed up. You can login now", data:responseData})
+ }catch (error){
+     response.send({message:error})
+ }
+
+ console.log("new user added");
+
+})
 
 module.exports = router;

@@ -1,19 +1,11 @@
-const mongoose = require('mongoose');
+const mongoose = require ("mongoose")
 
-
-const connectDB = async () => {
-    try {
-        await mongoose.connect('mongodb+srv://admin:adm!n@cluster0.j8axb.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',{useNewUrlParser:true, useUnifiedTopology: true})
-        console.log('DB connected...');
-
-
+const connectDB = async()=>{
+    try{const connect = await mongoose.connect("mongodb+srv://admin:adm!n@cluster0.j8axb.mongodb.net/myFirstDatabase?retryWrites=true&w=majority", {useNewUrlParser:true, useUnifiedTopology:true})
+    console.log('db is connected...')
     }catch(error){
-        console.log(error);
+        console.log(error)
     }
-
-
 }
 
-const connection = mongoose.connection
-
-module.exports = connectDB;
+module.exports = connectDB
