@@ -15,9 +15,7 @@ const validPassword=(password, salt, hash)=>{
        
     return hash ===hashVerified;
 
-}
-
-
+} 
 module.exports = {
     genPassword, validPassword
 }
